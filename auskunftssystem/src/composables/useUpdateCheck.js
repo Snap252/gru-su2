@@ -90,7 +90,8 @@ export function useUpdateCheck() {
     setDataVersion(remote.dataVersion)
     setAppVersion(remote.appVersion)
     updateState.value = null
-    if (appUpdate) {
+    // Only use SW update path when a waiting SW is actually ready
+    if (appUpdate && needRefresh.value) {
       await updateServiceWorker(true)
     } else {
       window.location.reload()

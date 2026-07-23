@@ -1,0 +1,20 @@
+#!/bin/sh
+# Bumps the patch version in auskunftssystem/package.json and syncs version.json
+# before every commit. Run `git config core.hooksPath .githooks` once to enable.
+set -e
+
+cd auskunftssystem
+
+npm version patch --no-git-tag-version > /dev/null 2>&1
+
+node -e "
+const fs = require('fs');
+const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const vf = 'public/version.json';
+const v = JSON.parse(fs.readFileSync(vf, 'utf8'));
+v.appVersion = pkg.version;
+fs.writeFileSync(vf, JSON.stringify(v, null, 2) + '\n');
+process.stdout.write('appVersion → ' + pkg.version + '\n');
+"
+
+git add package.json package-lock.json public/version.json
