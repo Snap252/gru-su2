@@ -8,7 +8,7 @@ export default defineConfig({
     vue(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicon.svg'],
       manifest: {
         name: 'Auskunftssystem',
@@ -31,7 +31,18 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        runtimeCaching: [
+          {
+            urlPattern: /\/data\/contacts\.json$/,
+            handler: 'NetworkFirst',
+            options: { cacheName: 'contacts-data' },
+          },
+          {
+            urlPattern: /\/version\.json$/,
+            handler: 'NetworkOnly',
+          },
+        ],
       },
     }),
   ],

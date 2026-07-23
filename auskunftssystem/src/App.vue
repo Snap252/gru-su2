@@ -1,8 +1,11 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useContacts } from './composables/useContacts.js'
+import { useUpdateCheck } from './composables/useUpdateCheck.js'
+import UpdatePrompt from './components/UpdatePrompt.vue'
 
 const { loading, error, offline, categories, loadContacts, search } = useContacts()
+const { updateState, initVersionTracking, dismissUpdate } = useUpdateCheck()
 
 const query = ref('')
 const selectedCategory = ref('Alle')
@@ -15,6 +18,9 @@ const suggestions = computed(() => {
   if (!query.value.trim()) return []
   return search(query.value, selectedCategory.value).slice(0, 10)
 })
+
+const localAppVersion = computed(() => localStorage.getItem('contacts_app_version') ?? '—')
+const localDataVersion = computed(() => localStorage.getItem('contacts_data_version') ?? '—')
 
 function selectContact(contact) {
   selectedContact.value = contact
@@ -60,6 +66,7 @@ function clearSelection() {
 
 onMounted(() => {
   loadContacts()
+  initVersionTracking()
   document.addEventListener('click', onClickOutside)
 })
 onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
@@ -71,7 +78,10 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
     <!-- Header -->
     <header class="bg-blue-800 text-white px-4 py-4 shadow-md">
       <h1 class="text-xl font-semibold tracking-tight">Auskunftssystem</h1>
-      <p v-if="offline" class="text-xs text-yellow-300 mt-1">Offline – Daten aus Cache</p>
+      <div class="flex items-center gap-3 mt-1">
+        <p v-if="offline" class="text-xs text-yellow-300">Offline – Daten aus Cache</p>
+        <p class="text-xs text-blue-300">App {{ localAppVersion }} · Daten {{ localDataVersion }}</p>
+      </div>
     </header>
 
     <!-- Search -->
@@ -166,5 +176,13 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         Namen eingeben und aus der Liste auswählen
       </div>
     </main>
+
+    <!-- Update-Prompt -->
+    <UpdatePrompt
+      v-if="updateState"
+      :state="updateState"
+      @apply="updateState.applyUpdate()"
+      @dismiss="dismissUpdate()"
+    />
   </div>
 </template>
