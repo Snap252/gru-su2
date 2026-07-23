@@ -37,7 +37,7 @@ export function useContacts() {
 
     if (!query.trim()) return list.slice().sort((a, b) => a.name.localeCompare(b.name))
 
-    const fuse = new Fuse(list, { keys: ['name'], threshold: 0.35 })
+    const fuse = new Fuse(list, { keys: ['name', 'valueStr'], threshold: 0.35 })
     return fuse.search(query).map((r) => r.item)
   }
 

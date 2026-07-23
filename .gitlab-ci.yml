@@ -17,6 +17,7 @@ build:
   script:
     - cd auskunftssystem
     - npm ci
+    - node scripts/fetch-contacts.js
     - npm run build
   artifacts:
     paths:
