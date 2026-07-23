@@ -4,7 +4,19 @@ import { useRegisterSW } from 'virtual:pwa-register/vue'
 const DATA_VERSION_KEY = 'contacts_data_version'
 const APP_VERSION_KEY = 'contacts_app_version'
 
-export const updateState = ref(null) // null | { appUpdate, dataUpdate, remoteAppVersion, remoteDataVersion, applyUpdate }
+export const updateState = ref(null)
+export const appVersion = ref(localStorage.getItem(APP_VERSION_KEY) ?? '—')
+export const dataVersion = ref(localStorage.getItem(DATA_VERSION_KEY) ?? '—')
+
+function setAppVersion(v) {
+  localStorage.setItem(APP_VERSION_KEY, v)
+  appVersion.value = v
+}
+
+function setDataVersion(v) {
+  localStorage.setItem(DATA_VERSION_KEY, v)
+  dataVersion.value = v
+}
 
 export function useUpdateCheck() {
   const { needRefresh, updateServiceWorker } = useRegisterSW({
@@ -75,8 +87,8 @@ export function useUpdateCheck() {
   }
 
   async function applyUpdate(remote, appUpdate) {
-    localStorage.setItem(DATA_VERSION_KEY, remote.dataVersion)
-    localStorage.setItem(APP_VERSION_KEY, remote.appVersion)
+    setDataVersion(remote.dataVersion)
+    setAppVersion(remote.appVersion)
     updateState.value = null
     if (appUpdate) {
       await updateServiceWorker(true)
@@ -97,8 +109,8 @@ export function useUpdateCheck() {
       const localApp = localStorage.getItem(APP_VERSION_KEY)
       const localData = localStorage.getItem(DATA_VERSION_KEY)
 
-      if (!localApp) localStorage.setItem(APP_VERSION_KEY, remote.appVersion)
-      if (!localData) localStorage.setItem(DATA_VERSION_KEY, remote.dataVersion)
+      if (!localApp) setAppVersion(remote.appVersion)
+      if (!localData) setDataVersion(remote.dataVersion)
 
       if (navigator.onLine) await checkDataVersion()
     } catch {
@@ -106,5 +118,5 @@ export function useUpdateCheck() {
     }
   }
 
-  return { updateState, initVersionTracking, dismissUpdate }
+  return { updateState, appVersion, dataVersion, initVersionTracking, dismissUpdate }
 }

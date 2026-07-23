@@ -5,7 +5,7 @@ import { useUpdateCheck } from './composables/useUpdateCheck.js'
 import UpdatePrompt from './components/UpdatePrompt.vue'
 
 const { loading, error, offline, categories, loadContacts, search } = useContacts()
-const { updateState, initVersionTracking, dismissUpdate } = useUpdateCheck()
+const { updateState, appVersion, dataVersion, initVersionTracking, dismissUpdate } = useUpdateCheck()
 
 const query = ref('')
 const selectedCategory = ref('Alle')
@@ -19,8 +19,6 @@ const suggestions = computed(() => {
   return search(query.value, selectedCategory.value).slice(0, 10)
 })
 
-const localAppVersion = computed(() => localStorage.getItem('contacts_app_version') ?? '—')
-const localDataVersion = computed(() => localStorage.getItem('contacts_data_version') ?? '—')
 
 function selectContact(contact) {
   selectedContact.value = contact
@@ -80,7 +78,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
       <h1 class="text-xl font-semibold tracking-tight">Auskunftssystem</h1>
       <div class="flex items-center gap-3 mt-1">
         <p v-if="offline" class="text-xs text-yellow-300">Offline – Daten aus Cache</p>
-        <p class="text-xs text-blue-300">App {{ localAppVersion }} · Daten {{ localDataVersion }}</p>
+        <p class="text-xs text-blue-300">App {{ appVersion }} · Daten {{ dataVersion }}</p>
       </div>
     </header>
 
