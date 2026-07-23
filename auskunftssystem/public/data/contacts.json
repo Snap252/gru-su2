@@ -1,0 +1,12 @@
+[
+  { "id": 1, "name": "Anna Becker", "phone": "+49 30 11111111", "category": "IT" },
+  { "id": 2, "name": "Ben Müller", "phone": "+49 30 22222222", "category": "HR" },
+  { "id": 3, "name": "Clara Schmidt", "phone": "+49 30 33333333", "category": "IT" },
+  { "id": 4, "name": "David Wagner", "phone": "+49 30 44444444", "category": "Vertrieb" },
+  { "id": 5, "name": "Eva Fischer", "phone": "+49 30 55555555", "category": "HR" },
+  { "id": 6, "name": "Felix Meyer", "phone": "+49 30 66666666", "category": "Vertrieb" },
+  { "id": 7, "name": "Greta Hoffmann", "phone": "+49 30 77777777", "category": "IT" },
+  { "id": 8, "name": "Hans Weber", "phone": "+49 30 88888888", "category": "Buchhaltung" },
+  { "id": 9, "name": "Ida Schulz", "phone": "+49 30 99999999", "category": "Buchhaltung" },
+  { "id": 10, "name": "Jan Koch", "phone": "+49 30 10101010", "category": "Vertrieb" }
+]

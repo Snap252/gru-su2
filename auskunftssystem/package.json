@@ -1,0 +1,22 @@
+{
+  "name": "auskunftssystem",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "fuse.js": "^7.0.0",
+    "vue": "^3.5.39"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.11",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "tailwindcss": "^4.1.11",
+    "vite": "^8.1.1",
+    "vite-plugin-pwa": "^1.0.0"
+  }
+}
