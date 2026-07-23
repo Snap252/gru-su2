@@ -119,7 +119,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
 
     <!-- Header -->
     <header class="bg-blue-800 text-white px-4 py-4 shadow-md">
-      <h1 class="text-xl font-semibold tracking-tight">Auskunftssystem</h1>
+      <h1 class="text-xl font-semibold tracking-tight">BOS-Kurzwahlen</h1>
       <div class="flex items-center gap-3 mt-1">
         <p v-if="offline" class="text-xs text-yellow-300">Offline – Daten aus Cache</p>
         <p class="text-xs text-blue-300">App {{ appVersion }} · Daten {{ dataVersion }}</p>

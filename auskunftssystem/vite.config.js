@@ -11,9 +11,9 @@ export default defineConfig({
       registerType: 'prompt',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'Auskunftssystem',
-        short_name: 'Auskunft',
-        description: 'Digitales Telefonbuch – Schnell Nummern nachschlagen',
+        name: 'BOS-Kurzwahlen',
+        short_name: 'BOS-KW',
+        description: 'BOS-Kurzwahlen – Funkgruppen schnell nachschlagen',
         lang: 'de',
         dir: 'ltr',
         theme_color: '#1e40af',
