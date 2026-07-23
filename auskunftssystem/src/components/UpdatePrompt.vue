@@ -54,13 +54,13 @@ function body(state) {
       <div class="flex gap-2">
         <button
           @click="$emit('dismiss')"
-          class="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+          class="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
         >
           Später
         </button>
         <button
           @click="$emit('apply')"
-          class="flex-1 rounded-xl bg-blue-700 text-white px-4 py-2.5 text-sm font-medium hover:bg-blue-800 transition-colors"
+          class="flex-1 rounded-xl bg-blue-700 text-white px-4 py-2.5 text-sm font-medium hover:bg-blue-800 transition-colors cursor-pointer"
         >
           Jetzt aktualisieren
         </button>

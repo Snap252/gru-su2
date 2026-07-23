@@ -136,7 +136,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
           :key="cat"
           @click="selectedCategory = cat; selectedContact = null"
           :class="[
-            'shrink-0 rounded-full px-3 py-1 text-sm font-medium transition-colors',
+            'shrink-0 rounded-full px-3 py-1 text-sm font-medium transition-colors cursor-pointer',
             selectedCategory === cat
               ? 'bg-blue-700 text-white'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -200,7 +200,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
           <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg shrink-0">
             📻
           </div>
-          <button @click="clearSelection" class="text-gray-400 hover:text-gray-600 text-sm">
+          <button @click="clearSelection" class="text-gray-400 hover:text-gray-600 text-sm cursor-pointer">
             ✕ Schließen
           </button>
         </div>
@@ -217,7 +217,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         <!-- Group value (copyable) -->
         <button
           @click="copyValue(selectedContact.value)"
-          class="w-full flex items-center justify-between bg-blue-700 hover:bg-blue-800 active:bg-blue-900 text-white rounded-xl px-5 py-3 transition-colors mb-3"
+          class="w-full flex items-center justify-between bg-blue-700 hover:bg-blue-800 active:bg-blue-900 text-white rounded-xl px-5 py-3 transition-colors mb-3 cursor-pointer"
         >
           <span class="text-sm opacity-80">Gruppe</span>
           <span class="text-2xl font-bold tabular-nums tracking-wide">{{ selectedContact.value }}</span>
@@ -251,7 +251,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
           <button
             v-if="canShare"
             @click="shareContact(selectedContact)"
-            class="flex-1 flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+            class="flex-1 flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
