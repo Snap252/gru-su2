@@ -1,0 +1,7 @@
+{
+  "env": {
+    "ANTHROPIC_API_KEY": "sk-T_TDbRBZoEXrqdCCvJ6n5Q",
+    "ANTHROPIC_BASE_URL": "https://adesso-ai-hub.3asabc.de"
+  },
+  "model": "claude-sonnet-4-6*"
+}

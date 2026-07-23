@@ -1,0 +1,8 @@
+project:
+    name: adscaileworkshop
+    repository: git@gitlab.adesso-group.com:christian.schmidt4/adscaileworkshop.git
+log:
+    level: info
+    format: text
+output:
+    format: text

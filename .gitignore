@@ -1,0 +1,5 @@
+.idea/
+.claude/settings.local.json
+.claude/.settings.json.swp
+.claude/.streb-installed
+.claude/.streb/

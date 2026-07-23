@@ -1,0 +1,9 @@
+# Personal settings (do not commit)
+settings.local.json
+
+# Local overrides
+*.local.md
+*.local.json
+
+# Per-project AI Hub key (set by streb init, do not commit)
+aihub-key
