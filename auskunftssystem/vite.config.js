@@ -60,7 +60,11 @@ export default defineConfig({
           {
             urlPattern: /\/data\/contacts\.json$/,
             handler: 'NetworkFirst',
-            options: { cacheName: 'contacts-data' },
+            options: {
+              cacheName: 'contacts-data',
+              // Only cache genuine JSON responses — prevents auth-redirect HTML from poisoning the cache
+              cacheableResponse: { statuses: [200], headers: { 'content-type': 'application/json' } },
+            },
           },
           {
             urlPattern: /\/version\.json$/,
