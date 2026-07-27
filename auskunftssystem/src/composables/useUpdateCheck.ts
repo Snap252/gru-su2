@@ -10,6 +10,12 @@ export const updateState = ref<UpdateState | null>(null)
 export const appVersion = ref<string>(localStorage.getItem(APP_VERSION_KEY) ?? '—')
 export const dataVersion = ref<string>(localStorage.getItem(DATA_VERSION_KEY) ?? '—')
 
+// Remote versions the user has already dismissed a prompt for, so a second
+// trigger (SW onNeedRefresh vs. version.json poll) doesn't re-open the
+// dialog for the same update.
+let dismissedAppVersion: string | null = null
+let dismissedDataVersion: string | null = null
+
 interface VersionJson {
   appVersion: string
   dataVersion: string
@@ -59,10 +65,25 @@ export function useUpdateCheck() {
     const localApp = localStorage.getItem(APP_VERSION_KEY)
     const localData = localStorage.getItem(DATA_VERSION_KEY)
 
-    const appUpdate = appUpdateReady || needRefresh.value || (localApp !== null && localApp !== remote?.appVersion)
-    const dataUpdate = remote !== null && localData !== null && localData !== remote.dataVersion
+    let appUpdate = appUpdateReady || needRefresh.value || (localApp !== null && localApp !== remote?.appVersion)
+    let dataUpdate = remote !== null && localData !== null && localData !== remote.dataVersion
+
+    // Don't re-surface a prompt for a version the user already dismissed —
+    // this composable is triggered independently from mount (version.json
+    // diff), the hourly poll, and the service worker's onNeedRefresh, and
+    // without this guard a dismissed update reappears as soon as the next
+    // trigger fires.
+    if (appUpdate && remote?.appVersion === dismissedAppVersion) appUpdate = false
+    if (dataUpdate && remote?.dataVersion === dismissedDataVersion) dataUpdate = false
 
     if (appUpdate || dataUpdate) {
+      // Merge with any already-visible prompt instead of replacing it, so
+      // two triggers firing close together (e.g. version.json check on
+      // mount, then SW onNeedRefresh moments later) combine into a single
+      // dialog rather than the second overwriting/reopening the first.
+      appUpdate = appUpdate || updateState.value?.appUpdate === true
+      dataUpdate = dataUpdate || updateState.value?.dataUpdate === true
+
       updateState.value = {
         appUpdate,
         dataUpdate,
@@ -89,6 +110,8 @@ export function useUpdateCheck() {
   }
 
   function dismissUpdate(): void {
+    if (updateState.value?.appUpdate) dismissedAppVersion = updateState.value.remoteAppVersion
+    if (updateState.value?.dataUpdate) dismissedDataVersion = updateState.value.remoteDataVersion
     updateState.value = null
   }
 
