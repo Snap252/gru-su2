@@ -56,6 +56,16 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
+        // /version.json is intentionally excluded from precaching and
+        // runtime caching — the update-check logic in useUpdateCheck.ts
+        // needs a genuinely live fetch on every check. Precaching it means
+        // any content change (even a data-only bump) alters the precache
+        // manifest hash, making the SW look like it has a new *app* version
+        // when only data changed. Runtime-caching it (even
+        // StaleWhileRevalidate) means the SW can return an old cached copy
+        // regardless of the request's `cache: 'no-store'`. Either way,
+        // update detection gets silently delayed or misattributed.
+        globIgnores: ['version.json'],
         runtimeCaching: [
           {
             urlPattern: /\/data\/contacts\.json$/,
@@ -64,14 +74,6 @@ export default defineConfig({
               cacheName: 'contacts-data',
               // Only cache genuine JSON responses — prevents auth-redirect HTML from poisoning the cache
               cacheableResponse: { statuses: [200], headers: { 'content-type': 'application/json' } },
-            },
-          },
-          {
-            urlPattern: /\/version\.json$/,
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'version-info',
-              cacheableResponse: { statuses: [200] },
             },
           },
         ],
