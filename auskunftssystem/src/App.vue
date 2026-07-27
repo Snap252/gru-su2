@@ -95,11 +95,11 @@ function whatsappUrl(contact) {
 }
 
 const FLAG_CONFIG = {
-  RTH: { label: 'RTH', color: 'bg-red-100 text-red-700', emoji: '🚁' },
-  THW: { label: 'THW', color: 'bg-blue-100 text-blue-800', emoji: '🏗️' },
-  Pol: { label: 'Pol', color: 'bg-green-100 text-green-700', emoji: '👮' },
-  nPol: { label: 'nPol', color: 'bg-gray-100 text-gray-600', emoji: '🚒' },
-  ÖA: { label: 'ÖA', color: 'bg-orange-100 text-orange-700', emoji: '⚡' },
+  RTH:  { label: 'RTH',  bg: 'background-color: lightgrey',                                                                         textClass: 'text-gray-800', emoji: '🚁' },
+  THW:  { label: 'THW',  bg: 'background-color: lightblue',                                                                          textClass: 'text-blue-900', emoji: '🏗️' },
+  Pol:  { label: 'Pol',  bg: 'background-color: green',                                                                              textClass: 'text-white',    emoji: '👮' },
+  nPol: { label: 'nPol', bg: 'background: linear-gradient(90deg, red 33.3%, white 33.3%, white 66.6%, orange 66.6%)',                textClass: 'text-gray-900', emoji: '🚒' },
+  ÖA:   { label: 'ÖA',   bg: 'background-color: black',                                                                              textClass: 'text-white',    emoji: '⚡' },
 }
 
 function flagEmoji(flag) {
@@ -235,7 +235,8 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
           <span
             v-for="flag in selectedContact.flags"
             :key="flag"
-            :class="['rounded-full px-2.5 py-0.5 text-xs font-medium', FLAG_CONFIG[flag]?.color ?? 'bg-gray-100 text-gray-600']"
+            :class="['rounded-full px-2.5 py-0.5 text-xs font-medium', FLAG_CONFIG[flag]?.textClass ?? 'text-gray-600']"
+            :style="FLAG_CONFIG[flag]?.bg ?? 'background-color: #e5e7eb'"
           >
             {{ FLAG_CONFIG[flag]?.emoji ?? '' }} {{ flag }}
           </span>
