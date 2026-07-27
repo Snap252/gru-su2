@@ -304,7 +304,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
     <UpdatePrompt
       v-if="updateState"
       :state="updateState"
-      @apply="updateState.applyUpdate()"
+      @apply="updateState?.applyUpdate()"
       @dismiss="dismissUpdate()"
     />
   </div>

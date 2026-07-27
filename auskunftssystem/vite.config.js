@@ -55,7 +55,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
         runtimeCaching: [
           {
             urlPattern: /\/data\/contacts\.json$/,
@@ -68,7 +68,11 @@ export default defineConfig({
           },
           {
             urlPattern: /\/version\.json$/,
-            handler: 'NetworkOnly',
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'version-info',
+              cacheableResponse: { statuses: [200] },
+            },
           },
         ],
       },
