@@ -1,11 +1,12 @@
 {
   "name": "auskunftssystem",
   "private": true,
-  "version": "1.1.12",
+  "version": "1.1.13",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vue-tsc --noEmit && vite build",
+    "typecheck": "vue-tsc --noEmit",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -16,7 +17,10 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-vue": "^6.0.7",
+    "@vue/tsconfig": "^0.9.1",
     "tailwindcss": "^4.3.3",
-    "vite": "^8.1.1"
+    "typescript": "^5.9.3",
+    "vite": "^8.1.1",
+    "vue-tsc": "^3.3.8"
   }
 }

@@ -1,39 +1,64 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { useContacts } from './composables/useContacts.js'
-import { useUpdateCheck } from './composables/useUpdateCheck.js'
+import { useContacts } from './composables/useContacts'
+import { useUpdateCheck } from './composables/useUpdateCheck'
 import UpdatePrompt from './components/UpdatePrompt.vue'
+import type { Gruppe } from './types'
 
 const { loading, error, offline, categories, loadContacts, search } = useContacts()
 const { updateState, appVersion, dataVersion, initVersionTracking, dismissUpdate } = useUpdateCheck()
 
 const query = ref('')
 const selectedCategory = ref('Alle')
-const selectedContact = ref(null)
+const selectedContact = ref<Gruppe | null>(null)
 const showSuggestions = ref(false)
 const activeIndex = ref(-1)
-const inputEl = ref(null)
+const inputEl = ref<HTMLInputElement | null>(null)
 const copied = ref(false)
 
-const suggestions = computed(() => {
+const suggestions = computed<Gruppe[]>(() => {
   if (!query.value.trim()) return []
   return search(query.value, selectedCategory.value).slice(0, 10)
 })
 
-function selectContact(contact) {
+interface FlagConfig {
+  bg: string
+  textClass: string
+}
+
+const FLAG_CONFIG: Record<string, FlagConfig> = {
+  RTH:  { bg: 'background-color: lightgrey',                                                          textClass: 'text-gray-800' },
+  THW:  { bg: 'background-color: lightblue',                                                           textClass: 'text-blue-900' },
+  Pol:  { bg: 'background-color: green',                                                               textClass: 'text-white'    },
+  nPol: { bg: 'background: linear-gradient(90deg, red 33.3%, white 33.3%, white 66.6%, orange 66.6%)', textClass: 'text-gray-900' },
+  OA:   { bg: 'background-color: black',                                                               textClass: 'text-white'    },
+}
+
+const FLAG_KEYS: Array<keyof Gruppe> = ['RTH', 'nPol', 'THW', 'Pol', 'OA']
+const SCOPE_KEYS: Array<keyof Gruppe> = ['Kreisweit', 'Landesweit', 'Bundesweit']
+
+function activeFlags(contact: Gruppe): string[] {
+  return FLAG_KEYS.filter(f => contact[f]).map(f => f as string)
+}
+
+function activeScopes(contact: Gruppe): string[] {
+  return SCOPE_KEYS.filter(s => contact[s]).map(s => s as string)
+}
+
+function selectContact(contact: Gruppe): void {
   selectedContact.value = contact
   query.value = contact.label
   showSuggestions.value = false
   activeIndex.value = -1
 }
 
-function onInput() {
+function onInput(): void {
   selectedContact.value = null
   showSuggestions.value = true
   activeIndex.value = -1
 }
 
-function onKeydown(e) {
+function onKeydown(e: KeyboardEvent): void {
   if (!showSuggestions.value || suggestions.value.length === 0) return
   if (e.key === 'ArrowDown') {
     e.preventDefault()
@@ -49,20 +74,20 @@ function onKeydown(e) {
   }
 }
 
-function onClickOutside(e) {
-  if (!e.target.closest('.search-container')) {
+function onClickOutside(e: MouseEvent): void {
+  if (!(e.target as Element).closest('.search-container')) {
     showSuggestions.value = false
   }
 }
 
-function clearSelection() {
+function clearSelection(): void {
   selectedContact.value = null
   query.value = ''
   showSuggestions.value = false
   inputEl.value?.focus()
 }
 
-async function copyValue(val) {
+async function copyValue(val: number): Promise<void> {
   try {
     await navigator.clipboard.writeText(String(val))
     copied.value = true
@@ -70,28 +95,9 @@ async function copyValue(val) {
   } catch {}
 }
 
-const canShare = computed(() => 'share' in navigator)
+const canShare = computed<boolean>(() => 'share' in navigator)
 
-const FLAG_CONFIG = {
-  RTH:  { bg: 'background-color: lightgrey',                                                          textClass: 'text-gray-800' },
-  THW:  { bg: 'background-color: lightblue',                                                           textClass: 'text-blue-900' },
-  Pol:  { bg: 'background-color: green',                                                               textClass: 'text-white'    },
-  nPol: { bg: 'background: linear-gradient(90deg, red 33.3%, white 33.3%, white 66.6%, orange 66.6%)', textClass: 'text-gray-900' },
-  OA:   { bg: 'background-color: black',                                                               textClass: 'text-white'    },
-}
-
-const FLAG_KEYS = ['RTH', 'nPol', 'THW', 'Pol', 'OA']
-const SCOPE_KEYS = ['Kreisweit', 'Landesweit', 'Bundesweit']
-
-function activeFlags(contact) {
-  return FLAG_KEYS.filter(f => contact[f])
-}
-
-function activeScopes(contact) {
-  return SCOPE_KEYS.filter(s => contact[s])
-}
-
-async function shareContact(contact) {
+async function shareContact(contact: Gruppe): Promise<void> {
   const flags = activeFlags(contact)
   const scopes = activeScopes(contact)
   const lines = [`${contact.label} (Gruppe ${contact.value})`]
@@ -103,7 +109,7 @@ async function shareContact(contact) {
   } catch {}
 }
 
-function whatsappUrl(contact) {
+function whatsappUrl(contact: Gruppe): string {
   const flags = activeFlags(contact)
   const scopes = activeScopes(contact)
   const lines = [
@@ -116,7 +122,6 @@ function whatsappUrl(contact) {
   if (contact.Zusatztext) lines.push(`ℹ️ ${contact.Zusatztext}`)
   return `https://wa.me/?text=${encodeURIComponent(lines.join('\n'))}`
 }
-
 
 onMounted(() => {
   loadContacts()

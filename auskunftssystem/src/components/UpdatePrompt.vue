@@ -1,22 +1,23 @@
-<script setup>
-defineProps({
-  state: { type: Object, required: true },
-})
-defineEmits(['apply', 'dismiss'])
+<script setup lang="ts">
+import type { UpdateState } from '../types'
 
-function headline(state) {
+const props = defineProps<{ state: UpdateState }>()
+defineEmits<{ apply: []; dismiss: [] }>()
+
+function headline(state: UpdateState): string {
   if (state.appUpdate && state.dataUpdate) return 'App & Daten aktualisiert'
   if (state.appUpdate) return 'Neue App-Version verfügbar'
   return 'Neue Daten verfügbar'
 }
 
-function body(state) {
+function body(state: UpdateState): string {
   if (state.appUpdate && state.dataUpdate)
     return 'Es sind sowohl eine neue Anwendungsversion als auch aktualisierte Daten verfügbar.'
   if (state.appUpdate)
     return 'Es steht eine neue Version der Anwendung bereit.'
   return 'Das Telefonbuch-Verzeichnis wurde aktualisiert.'
 }
+
 </script>
 
 <template>

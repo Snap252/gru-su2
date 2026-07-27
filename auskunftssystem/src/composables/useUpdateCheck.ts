@@ -1,26 +1,32 @@
 import { ref } from 'vue'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
+import type { UpdateState } from '../types'
 
 const DATA_VERSION_KEY = 'contacts_data_version'
 const APP_VERSION_KEY = 'contacts_app_version'
 
-export const updateState = ref(null)
-export const appVersion = ref(localStorage.getItem(APP_VERSION_KEY) ?? '—')
-export const dataVersion = ref(localStorage.getItem(DATA_VERSION_KEY) ?? '—')
+export const updateState = ref<UpdateState | null>(null)
+export const appVersion = ref<string>(localStorage.getItem(APP_VERSION_KEY) ?? '—')
+export const dataVersion = ref<string>(localStorage.getItem(DATA_VERSION_KEY) ?? '—')
 
-function setAppVersion(v) {
+interface VersionJson {
+  appVersion: string
+  dataVersion: string
+}
+
+function setAppVersion(v: string): void {
   localStorage.setItem(APP_VERSION_KEY, v)
   appVersion.value = v
 }
 
-function setDataVersion(v) {
+function setDataVersion(v: string): void {
   localStorage.setItem(DATA_VERSION_KEY, v)
   dataVersion.value = v
 }
 
 export function useUpdateCheck() {
   const { needRefresh, updateServiceWorker } = useRegisterSW({
-    onRegisteredSW(swUrl, registration) {
+    onRegisteredSW(_swUrl: string, registration: ServiceWorkerRegistration | undefined) {
       if (!registration) return
       setInterval(() => {
         if (!navigator.onLine) return
@@ -33,11 +39,11 @@ export function useUpdateCheck() {
     },
   })
 
-  async function checkDataVersion() {
+  async function checkDataVersion(): Promise<void> {
     try {
       const res = await fetch('/version.json', { cache: 'no-store' })
       if (!res.ok) return
-      const remote = await res.json()
+      const remote = await res.json() as VersionJson
       const localApp = localStorage.getItem(APP_VERSION_KEY)
       const localData = localStorage.getItem(DATA_VERSION_KEY)
 
@@ -60,11 +66,11 @@ export function useUpdateCheck() {
     }
   }
 
-  async function triggerCheck(appUpdateReady = false) {
+  async function triggerCheck(appUpdateReady = false): Promise<void> {
     try {
       const res = await fetch('/version.json', { cache: 'no-store' })
       if (!res.ok) return
-      const remote = await res.json()
+      const remote = await res.json() as VersionJson
       const localApp = localStorage.getItem(APP_VERSION_KEY)
       const localData = localStorage.getItem(DATA_VERSION_KEY)
 
@@ -86,7 +92,7 @@ export function useUpdateCheck() {
     }
   }
 
-  async function applyUpdate(remote, appUpdate) {
+  async function applyUpdate(remote: VersionJson, appUpdate: boolean): Promise<void> {
     setDataVersion(remote.dataVersion)
     setAppVersion(remote.appVersion)
     updateState.value = null
@@ -98,15 +104,15 @@ export function useUpdateCheck() {
     }
   }
 
-  function dismissUpdate() {
+  function dismissUpdate(): void {
     updateState.value = null
   }
 
-  async function initVersionTracking() {
+  async function initVersionTracking(): Promise<void> {
     try {
       const res = await fetch('/version.json', { cache: 'no-store' })
       if (!res.ok) return
-      const remote = await res.json()
+      const remote = await res.json() as VersionJson
       const localApp = localStorage.getItem(APP_VERSION_KEY)
       const localData = localStorage.getItem(DATA_VERSION_KEY)
 
