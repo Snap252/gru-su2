@@ -169,7 +169,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
     <!-- Header -->
     <header
       class="text-gray-900 px-4 shadow-md"
-      style="background-color:#50e3c2; padding-top: calc(env(safe-area-inset-top) + 1rem); padding-bottom: 1rem;"
+      style="background-color:#50e3c2; padding-top: calc(max(env(safe-area-inset-top), 1rem)); padding-bottom: 1rem;"
     >
       <h1 class="text-xl font-semibold tracking-tight">
         BOS-Kurzwahlen
