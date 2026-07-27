@@ -34,6 +34,18 @@ const FLAG_CONFIG: Record<string, FlagConfig> = {
   OA:   { bg: 'background-color: black',                                                               textClass: 'text-white'    },
 }
 
+interface ScopeConfig extends FlagConfig {
+  label: string
+}
+
+// Short label + tricolor gradient per scope, matching the legacy gru-su
+// "Gebiet" badges (Bundesweit uses the German flag colors black-red-gold).
+const SCOPE_CONFIG: Record<string, ScopeConfig> = {
+  Kreisweit:  { label: 'Kreis', bg: 'background-image: linear-gradient(-225deg, #00008077 33%, #de572877 33%, #de572877 66%, #4d81bc77 66%)', textClass: 'text-gray-900' },
+  Landesweit: { label: 'Land',  bg: 'background-image: linear-gradient(-225deg, #00923377 33%, #ffffff77 33%, #ffffff77 66%, #e4001477 66%)', textClass: 'text-gray-900' },
+  Bundesweit: { label: 'Bund',  bg: 'background-image: linear-gradient(-225deg, #00000077 33%, #dd000077 33%, #dd000077 66%, #ffcc0077 66%)', textClass: 'text-white'    },
+}
+
 const FLAG_KEYS: Array<keyof Gruppe> = ['RTH', 'nPol', 'THW', 'Pol', 'OA']
 const SCOPE_KEYS: Array<keyof Gruppe> = ['Kreisweit', 'Landesweit', 'Bundesweit']
 
@@ -259,8 +271,9 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
           <span
             v-for="scope in activeScopes(selectedContact)"
             :key="scope"
-            class="text-xs bg-gray-100 text-gray-600 rounded-full px-2 py-0.5"
-          >{{ scope }}</span>
+            :class="['rounded-full px-2.5 py-0.5 text-xs font-medium border border-gray-400', SCOPE_CONFIG[scope]?.textClass ?? 'text-gray-600']"
+            :style="SCOPE_CONFIG[scope]?.bg ?? 'background-color: #e5e7eb'"
+          >{{ SCOPE_CONFIG[scope]?.label ?? scope }}</span>
         </div>
 
         <!-- Group value (copyable) -->
