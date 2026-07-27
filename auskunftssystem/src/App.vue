@@ -256,24 +256,22 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         id="contact-card"
         class="bg-white rounded-2xl shadow-sm p-6 max-w-sm mx-auto"
       >
-        <!-- Header row -->
-        <div class="flex items-start justify-start mb-4">
+        <!-- Header row: name & close button -->
+        <div class="flex items-start justify-between gap-3">
+          <h2
+            id="contact-label"
+            class="text-xl font-semibold text-gray-900 leading-tight"
+          >
+            {{ selectedContact.label }}
+          </h2>
           <button
             id="contact-close-button"
-            class="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
+            class="text-gray-400 hover:text-gray-600 text-sm cursor-pointer shrink-0"
             @click="clearSelection"
           >
             ✕ Schließen
           </button>
         </div>
-
-        <!-- Name & scopes -->
-        <h2
-          id="contact-label"
-          class="text-xl font-semibold text-gray-900 leading-tight"
-        >
-          {{ selectedContact.label }}
-        </h2>
         <div
           id="contact-scopes"
           class="flex flex-wrap items-center gap-2 mt-1.5 mb-4"
