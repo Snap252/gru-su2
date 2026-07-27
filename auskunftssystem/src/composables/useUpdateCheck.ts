@@ -45,12 +45,12 @@ export function useUpdateCheck() {
   const { needRefresh, offlineReady, updateServiceWorker } = useRegisterSW({
     onRegisteredSW(_swUrl: string, registration: ServiceWorkerRegistration | undefined) {
       if (!registration) return
-      // Check hourly for updates
+      // Check every 10 minutes for updates
       setInterval(() => {
         if (!navigator.onLine) return
         registration.update()
         void checkForUpdates()
-      }, 60 * 60 * 1000)
+      }, 10 * 60 * 1000)
     },
     onNeedRefresh() {
       void checkForUpdates(true)
