@@ -49,6 +49,24 @@ const SCOPE_CONFIG: Record<string, ScopeConfig> = {
 const FLAG_KEYS: Array<keyof Gruppe> = ['RTH', 'nPol', 'THW', 'Pol', 'OA']
 const SCOPE_KEYS: Array<keyof Gruppe> = ['Kreisweit', 'Landesweit', 'Bundesweit']
 
+// Zusatztext can hold one of these known keys instead of free text — mapped
+// to a richer HTML notice shown at the top of the card.
+const HINWEIS_MAP: Record<string, string> = {
+  text_adhoc_bund: '<div>Für Ad-hoc-Einsatzlagen;</div><div>Abstimmung mit TTB,</div><div>Freischaltung für alle BOS möglich</div>',
+  text_adhoc_land: '<div>Für Ad-hoc-Einsatzlagen;</div><div>Abstimmung mit TTB</div>',
+  text_plan_bund:  '<div>Für planbare Einsatzlagen;</div><div>Abstimmung mit TTB,</div><div>Freischaltung für alle BOS möglich</div>',
+  text_plan_land:  '<div>Für planbare Einsatzlagen;</div><div>Abstimmung mit TTB</div>',
+}
+
+function hinweisHtml(contact: Gruppe): string | null {
+  return (contact.Zusatztext && HINWEIS_MAP[contact.Zusatztext]) ?? null
+}
+
+function hinweisText(contact: Gruppe): string | null {
+  const html = hinweisHtml(contact)
+  return html ? html.replace(/<div>/g, '').replace(/<\/div>/g, ' ').trim() : null
+}
+
 function activeFlags(contact: Gruppe): string[] {
   return FLAG_KEYS.filter(f => contact[f]).map(f => f as string)
 }
@@ -116,6 +134,8 @@ async function shareContact(contact: Gruppe): Promise<void> {
   if (scopes.length) lines.push(scopes.join(', '))
   if (flags.length) lines.push(flags.join(' · '))
   if (contact.PolKW) lines.push(`Pol-KW: ${contact.PolKW}`)
+  const hinweis = hinweisText(contact) ?? contact.Zusatztext
+  if (hinweis) lines.push(`Hinweis: ${hinweis}`)
   try {
     await navigator.share({ title: contact.label, text: lines.join('\n') })
   } catch { /* share cancelled or not available */ }
@@ -131,7 +151,8 @@ function whatsappUrl(contact: Gruppe): string {
   if (scopes.length) lines.push(scopes.join(', '))
   if (flags.length) lines.push(flags.join(' · '))
   if (contact.PolKW) lines.push(`Pol-KW: ${contact.PolKW}`)
-  if (contact.Zusatztext) lines.push(`ℹ️ ${contact.Zusatztext}`)
+  const hinweis = hinweisText(contact) ?? contact.Zusatztext
+  if (hinweis) lines.push(`ℹ️ ${hinweis}`)
   return `https://wa.me/?text=${encodeURIComponent(lines.join('\n'))}`
 }
 
@@ -256,6 +277,18 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         id="contact-card"
         class="bg-white rounded-2xl shadow-sm p-6 max-w-sm mx-auto"
       >
+        <!-- Hinweis (mapped Zusatztext) -->
+        <div
+          v-if="hinweisHtml(selectedContact)"
+          id="contact-hinweis"
+          class="border-2 border-red-600 rounded-xl px-4 py-3 mb-4 text-sm text-red-800"
+        >
+          <p class="font-semibold text-red-700 mb-1">
+            Hinweis
+          </p>
+          <div v-html="hinweisHtml(selectedContact)" />
+        </div>
+
         <!-- Header row: name & close button -->
         <div class="flex items-start justify-between gap-3">
           <h2
@@ -321,9 +354,9 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
           </span>
         </div>
 
-        <!-- Zusatztext -->
+        <!-- Zusatztext (only when not already shown as a Hinweis above) -->
         <p
-          v-if="selectedContact.Zusatztext"
+          v-if="selectedContact.Zusatztext && !hinweisHtml(selectedContact)"
           id="contact-zusatztext"
           class="text-xs text-gray-500 italic mb-4"
         >
