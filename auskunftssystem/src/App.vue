@@ -277,18 +277,6 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         id="contact-card"
         class="bg-white rounded-2xl shadow-sm p-6 max-w-sm mx-auto"
       >
-        <!-- Hinweis (mapped Zusatztext) -->
-        <div
-          v-if="hinweisHtml(selectedContact)"
-          id="contact-hinweis"
-          class="border-2 border-red-600 rounded-xl px-4 py-3 mb-4 text-sm text-red-800"
-        >
-          <p class="font-semibold text-red-700 mb-1">
-            Hinweis
-          </p>
-          <div v-html="hinweisHtml(selectedContact)" />
-        </div>
-
         <!-- Header row: name & close button -->
         <div class="flex items-start justify-between gap-3">
           <h2
@@ -305,6 +293,19 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
             ✕ Schließen
           </button>
         </div>
+
+        <!-- Hinweis (mapped Zusatztext) -->
+        <div
+          v-if="hinweisHtml(selectedContact)"
+          id="contact-hinweis"
+          class="border-2 border-red-600 rounded-xl px-4 py-3 mt-3 mb-4 text-sm text-red-800"
+        >
+          <p class="font-semibold text-red-700 mb-1">
+            ⚠️ Hinweis
+          </p>
+          <div v-html="hinweisHtml(selectedContact)" />
+        </div>
+
         <div
           id="contact-scopes"
           class="flex flex-wrap items-center gap-2 mt-1.5 mb-4"
