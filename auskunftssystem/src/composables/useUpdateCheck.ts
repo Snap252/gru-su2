@@ -64,8 +64,16 @@ export function useUpdateCheck() {
     const remote = await fetchVersionJson()
     const localApp = localStorage.getItem(APP_VERSION_KEY)
     const localData = localStorage.getItem(DATA_VERSION_KEY)
+    // Fall back the same way the dialog displays these, so a transient
+    // fetch failure (remote === null) can't desync the dismissal check below.
+    const remoteAppVersion = remote?.appVersion ?? localApp ?? '—'
+    const remoteDataVersion = remote?.dataVersion ?? localData ?? '—'
 
-    let appUpdate = appUpdateReady || needRefresh.value || (localApp !== null && localApp !== remote?.appVersion)
+    // Require a successful fetch for the version-diff signal — otherwise a
+    // transient /version.json failure makes remote.appVersion undefined,
+    // which never equals localApp and falsely looks like a new version.
+    let appUpdate = appUpdateReady || needRefresh.value ||
+      (remote !== null && localApp !== null && localApp !== remote.appVersion)
     let dataUpdate = remote !== null && localData !== null && localData !== remote.dataVersion
 
     // Don't re-surface a prompt for a version the user already dismissed —
@@ -73,8 +81,8 @@ export function useUpdateCheck() {
     // diff), the hourly poll, and the service worker's onNeedRefresh, and
     // without this guard a dismissed update reappears as soon as the next
     // trigger fires.
-    if (appUpdate && remote?.appVersion === dismissedAppVersion) appUpdate = false
-    if (dataUpdate && remote?.dataVersion === dismissedDataVersion) dataUpdate = false
+    if (appUpdate && remoteAppVersion === dismissedAppVersion) appUpdate = false
+    if (dataUpdate && remoteDataVersion === dismissedDataVersion) dataUpdate = false
 
     if (appUpdate || dataUpdate) {
       // Merge with any already-visible prompt instead of replacing it, so
@@ -87,8 +95,8 @@ export function useUpdateCheck() {
       updateState.value = {
         appUpdate,
         dataUpdate,
-        remoteAppVersion: remote?.appVersion ?? localApp ?? '—',
-        remoteDataVersion: remote?.dataVersion ?? localData ?? '—',
+        remoteAppVersion,
+        remoteDataVersion,
         localAppVersion: localApp,
         localDataVersion: localData,
         applyUpdate: () => void applyUpdate(remote, appUpdate),
