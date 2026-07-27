@@ -164,7 +164,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
           class="text-xs"
           style="color:#1a6b5a"
         >
-          App {{ appVersion }} · Daten {{ dataVersion }}
+          App: <code id="appVersion">{{ appVersion }}</code> · Daten: <code id="dataVersion">{{ dataVersion }}</code>
         </p>
       </div>
     </header>
