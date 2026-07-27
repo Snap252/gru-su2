@@ -80,6 +80,7 @@ function selectContact(contact: Gruppe): void {
   query.value = contact.label
   showSuggestions.value = false
   activeIndex.value = -1
+  inputEl.value?.blur()
 }
 
 function onInput(): void {
