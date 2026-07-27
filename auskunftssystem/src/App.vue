@@ -18,7 +18,7 @@ const copied = ref(false)
 
 const suggestions = computed<Gruppe[]>(() => {
   if (!query.value.trim()) return []
-  return search(query.value, selectedCategory.value).slice(0, 10)
+  return search(query.value, selectedCategory.value).slice(0, 5)
 })
 
 interface FlagConfig {
@@ -182,7 +182,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
           ref="inputEl"
           v-model="query"
           type="search"
-          placeholder="Gruppe suchen (Name oder Nummer)…"
+          placeholder="Gruppenname suchen…"
           autofocus
           autocomplete="off"
           class="w-full rounded-xl border border-gray-300 px-4 py-3 text-base outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
@@ -360,7 +360,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         v-else
         class="text-center text-gray-300 mt-16 text-sm"
       >
-        Namen oder Gruppennummer eingeben und auswählen
+        Gruppenname eingeben und auswählen
       </div>
     </main>
 
