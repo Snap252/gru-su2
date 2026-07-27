@@ -88,23 +88,20 @@ function whatsappUrl(contact) {
     `_Gruppe ${contact.value}_`,
   ]
   if (contact.scope) lines.push(contact.scope)
-  if (contact.flags.length) lines.push(contact.flags.map(f => flagEmoji(f) + ' ' + f).join('  '))
+  if (contact.flags.length) lines.push(contact.flags.join(' · '))
   if (contact.polKW) lines.push(`Pol-KW: ${contact.polKW}`)
   if (contact.zusatztext) lines.push(`ℹ️ ${contact.zusatztext}`)
   return `https://wa.me/?text=${encodeURIComponent(lines.join('\n'))}`
 }
 
 const FLAG_CONFIG = {
-  RTH:  { label: 'RTH',  bg: 'background-color: lightgrey',                                                                         textClass: 'text-gray-800', emoji: '🚁' },
-  THW:  { label: 'THW',  bg: 'background-color: lightblue',                                                                          textClass: 'text-blue-900', emoji: '🏗️' },
-  Pol:  { label: 'Pol',  bg: 'background-color: green',                                                                              textClass: 'text-white',    emoji: '👮' },
-  nPol: { label: 'nPol', bg: 'background: linear-gradient(90deg, red 33.3%, white 33.3%, white 66.6%, orange 66.6%)',                textClass: 'text-gray-900', emoji: '🚒' },
-  ÖA:   { label: 'ÖA',   bg: 'background-color: black',                                                                              textClass: 'text-white',    emoji: '⚡' },
+  RTH:  { label: 'RTH',  bg: 'background-color: lightgrey',                                                          textClass: 'text-gray-800' },
+  THW:  { label: 'THW',  bg: 'background-color: lightblue',                                                           textClass: 'text-blue-900' },
+  Pol:  { label: 'Pol',  bg: 'background-color: green',                                                               textClass: 'text-white'    },
+  nPol: { label: 'nPol', bg: 'background: linear-gradient(90deg, red 33.3%, white 33.3%, white 66.6%, orange 66.6%)', textClass: 'text-gray-900' },
+  ÖA:   { label: 'ÖA',   bg: 'background-color: black',                                                               textClass: 'text-white'    },
 }
 
-function flagEmoji(flag) {
-  return FLAG_CONFIG[flag]?.emoji ?? '•'
-}
 
 onMounted(() => {
   loadContacts()
@@ -238,7 +235,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
             :class="['rounded-full px-2.5 py-0.5 text-xs font-medium', FLAG_CONFIG[flag]?.textClass ?? 'text-gray-600']"
             :style="FLAG_CONFIG[flag]?.bg ?? 'background-color: #e5e7eb'"
           >
-            {{ FLAG_CONFIG[flag]?.emoji ?? '' }} {{ flag }}
+            {{ flag }}
           </span>
         </div>
 
