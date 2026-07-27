@@ -118,7 +118,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
   <div class="min-h-screen bg-gray-50 flex flex-col">
 
     <!-- Header -->
-    <header class="text-gray-900 px-4 py-4 shadow-md" style="background-color:#50e3c2">
+    <header class="text-gray-900 px-4 shadow-md" style="background-color:#50e3c2; padding-top: calc(env(safe-area-inset-top) + 1rem); padding-bottom: 1rem;">
       <h1 class="text-xl font-semibold tracking-tight">BOS-Kurzwahlen</h1>
       <div class="flex items-center gap-3 mt-1">
         <p v-if="offline" class="text-xs text-red-700">Offline – Daten aus Cache</p>
