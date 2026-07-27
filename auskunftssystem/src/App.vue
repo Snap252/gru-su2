@@ -257,10 +257,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         class="bg-white rounded-2xl shadow-sm p-6 max-w-sm mx-auto"
       >
         <!-- Header row -->
-        <div class="flex items-start justify-between mb-4">
-          <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg shrink-0">
-            📻
-          </div>
+        <div class="flex items-start justify-start mb-4">
           <button
             id="contact-close-button"
             class="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
