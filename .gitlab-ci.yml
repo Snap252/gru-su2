@@ -32,6 +32,7 @@ pages:
     - build
   script:
     - mv auskunftssystem/dist public
+    - cat public/version.json
   artifacts:
     paths:
       - public
