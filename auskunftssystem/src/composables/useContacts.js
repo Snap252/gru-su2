@@ -46,8 +46,14 @@ export function useContacts() {
     }
   }
 
+  const FLAG_KEYS = ['RTH', 'nPol', 'THW', 'Pol', 'OA']
+  const SCOPE_KEYS = ['Kreisweit', 'Landesweit', 'Bundesweit']
+
   const categories = computed(() => {
-    const cats = new Set(contacts.value.map((c) => c.category))
+    const cats = new Set()
+    for (const c of contacts.value) {
+      for (const f of FLAG_KEYS) if (c[f]) cats.add(f)
+    }
     return ['Alle', ...Array.from(cats).sort()]
   })
 
@@ -55,12 +61,12 @@ export function useContacts() {
     let list = contacts.value
 
     if (category && category !== 'Alle') {
-      list = list.filter((c) => c.category === category)
+      list = list.filter((c) => c[category] === true)
     }
 
-    if (!query.trim()) return list.slice().sort((a, b) => a.name.localeCompare(b.name))
+    if (!query.trim()) return list.slice().sort((a, b) => a.label.localeCompare(b.label))
 
-    const fuse = new Fuse(list, { keys: ['name', 'valueStr'], threshold: 0.35 })
+    const fuse = new Fuse(list, { keys: ['label', 'value'], threshold: 0.35 })
     return fuse.search(query).map((r) => r.item)
   }
 

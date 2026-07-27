@@ -22,7 +22,7 @@ const suggestions = computed(() => {
 
 function selectContact(contact) {
   selectedContact.value = contact
-  query.value = contact.name
+  query.value = contact.label
   showSuggestions.value = false
   activeIndex.value = -1
 }
@@ -72,34 +72,49 @@ async function copyValue(val) {
 
 const canShare = computed(() => 'share' in navigator)
 
+const FLAG_CONFIG = {
+  RTH:  { bg: 'background-color: lightgrey',                                                          textClass: 'text-gray-800' },
+  THW:  { bg: 'background-color: lightblue',                                                           textClass: 'text-blue-900' },
+  Pol:  { bg: 'background-color: green',                                                               textClass: 'text-white'    },
+  nPol: { bg: 'background: linear-gradient(90deg, red 33.3%, white 33.3%, white 66.6%, orange 66.6%)', textClass: 'text-gray-900' },
+  OA:   { bg: 'background-color: black',                                                               textClass: 'text-white'    },
+}
+
+const FLAG_KEYS = ['RTH', 'nPol', 'THW', 'Pol', 'OA']
+const SCOPE_KEYS = ['Kreisweit', 'Landesweit', 'Bundesweit']
+
+function activeFlags(contact) {
+  return FLAG_KEYS.filter(f => contact[f])
+}
+
+function activeScopes(contact) {
+  return SCOPE_KEYS.filter(s => contact[s])
+}
+
 async function shareContact(contact) {
-  const lines = [`${contact.name} (Gruppe ${contact.value})`]
-  if (contact.scope) lines.push(contact.scope)
-  if (contact.flags.length) lines.push(contact.flags.join(' · '))
-  if (contact.polKW) lines.push(`Pol-KW: ${contact.polKW}`)
+  const flags = activeFlags(contact)
+  const scopes = activeScopes(contact)
+  const lines = [`${contact.label} (Gruppe ${contact.value})`]
+  if (scopes.length) lines.push(scopes.join(', '))
+  if (flags.length) lines.push(flags.join(' · '))
+  if (contact.PolKW) lines.push(`Pol-KW: ${contact.PolKW}`)
   try {
-    await navigator.share({ title: contact.name, text: lines.join('\n') })
+    await navigator.share({ title: contact.label, text: lines.join('\n') })
   } catch {}
 }
 
 function whatsappUrl(contact) {
+  const flags = activeFlags(contact)
+  const scopes = activeScopes(contact)
   const lines = [
-    `*${contact.name}*`,
+    `*${contact.label}*`,
     `_Gruppe ${contact.value}_`,
   ]
-  if (contact.scope) lines.push(contact.scope)
-  if (contact.flags.length) lines.push(contact.flags.join(' · '))
-  if (contact.polKW) lines.push(`Pol-KW: ${contact.polKW}`)
-  if (contact.zusatztext) lines.push(`ℹ️ ${contact.zusatztext}`)
+  if (scopes.length) lines.push(scopes.join(', '))
+  if (flags.length) lines.push(flags.join(' · '))
+  if (contact.PolKW) lines.push(`Pol-KW: ${contact.PolKW}`)
+  if (contact.Zusatztext) lines.push(`ℹ️ ${contact.Zusatztext}`)
   return `https://wa.me/?text=${encodeURIComponent(lines.join('\n'))}`
-}
-
-const FLAG_CONFIG = {
-  RTH:  { label: 'RTH',  bg: 'background-color: lightgrey',                                                          textClass: 'text-gray-800' },
-  THW:  { label: 'THW',  bg: 'background-color: lightblue',                                                           textClass: 'text-blue-900' },
-  Pol:  { label: 'Pol',  bg: 'background-color: green',                                                               textClass: 'text-white'    },
-  nPol: { label: 'nPol', bg: 'background: linear-gradient(90deg, red 33.3%, white 33.3%, white 66.6%, orange 66.6%)', textClass: 'text-gray-900' },
-  ÖA:   { label: 'ÖA',   bg: 'background-color: black',                                                               textClass: 'text-white'    },
 }
 
 
@@ -165,14 +180,14 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         >
           <li
             v-for="(contact, i) in suggestions"
-            :key="contact.id"
+            :key="contact.value"
             @mousedown.prevent="selectContact(contact)"
             :class="[
               'flex items-center justify-between px-4 py-3 cursor-pointer transition-colors',
               i === activeIndex ? 'bg-blue-50' : 'hover:bg-gray-50'
             ]"
           >
-            <span class="font-medium text-gray-900">{{ contact.name }}</span>
+            <span class="font-medium text-gray-900">{{ contact.label }}</span>
             <span class="text-xs text-gray-400 ml-2 tabular-nums">{{ contact.value }}</span>
           </li>
         </ul>
@@ -202,13 +217,14 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
           </button>
         </div>
 
-        <!-- Name & category -->
-        <h2 class="text-xl font-semibold text-gray-900 leading-tight">{{ selectedContact.name }}</h2>
+        <!-- Name & scopes -->
+        <h2 class="text-xl font-semibold text-gray-900 leading-tight">{{ selectedContact.label }}</h2>
         <div class="flex flex-wrap items-center gap-2 mt-1.5 mb-4">
-          <span class="text-sm text-gray-500">{{ selectedContact.category }}</span>
-          <span v-if="selectedContact.scope" class="text-xs bg-gray-100 text-gray-600 rounded-full px-2 py-0.5">
-            {{ selectedContact.scope }}
-          </span>
+          <span
+            v-for="scope in activeScopes(selectedContact)"
+            :key="scope"
+            class="text-xs bg-gray-100 text-gray-600 rounded-full px-2 py-0.5"
+          >{{ scope }}</span>
         </div>
 
         <!-- Group value (copyable) -->
@@ -222,15 +238,15 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         </button>
 
         <!-- PolKW -->
-        <div v-if="selectedContact.polKW" class="flex items-center justify-between bg-gray-50 rounded-xl px-5 py-3 mb-3 text-sm">
+        <div v-if="selectedContact.PolKW" class="flex items-center justify-between bg-gray-50 rounded-xl px-5 py-3 mb-3 text-sm">
           <span class="text-gray-500">Pol-Kurzwahl</span>
-          <span class="font-semibold tabular-nums text-gray-800">{{ selectedContact.polKW }}</span>
+          <span class="font-semibold tabular-nums text-gray-800">{{ selectedContact.PolKW }}</span>
         </div>
 
         <!-- Flags -->
-        <div v-if="selectedContact.flags.length > 0" class="flex flex-wrap gap-1.5 mb-4">
+        <div v-if="activeFlags(selectedContact).length > 0" class="flex flex-wrap gap-1.5 mb-4">
           <span
-            v-for="flag in selectedContact.flags"
+            v-for="flag in activeFlags(selectedContact)"
             :key="flag"
             :class="['rounded-full px-2.5 py-0.5 text-xs font-medium', FLAG_CONFIG[flag]?.textClass ?? 'text-gray-600']"
             :style="FLAG_CONFIG[flag]?.bg ?? 'background-color: #e5e7eb'"
@@ -240,8 +256,8 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         </div>
 
         <!-- Zusatztext -->
-        <p v-if="selectedContact.zusatztext" class="text-xs text-gray-500 italic mb-4">
-          ℹ️ {{ selectedContact.zusatztext }}
+        <p v-if="selectedContact.Zusatztext" class="text-xs text-gray-500 italic mb-4">
+          ℹ️ {{ selectedContact.Zusatztext }}
         </p>
 
         <!-- Share buttons -->

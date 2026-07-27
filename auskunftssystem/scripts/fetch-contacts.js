@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Fetches gruppen.js from GitHub and converts to contacts.json
+ * Fetches gruppen.js from GitHub and writes contacts.json using the same schema.
  * Run before build: node scripts/fetch-contacts.js
  */
 import { writeFileSync, readFileSync } from 'fs'
@@ -13,34 +13,6 @@ const VERSION_FILE = join(__dirname, '../public/version.json')
 
 const SOURCE_URL =
   'https://raw.githubusercontent.com/Snap252/gru-su/refs/heads/master/docs/gruppen.js'
-
-function deriveCategory(e) {
-  if (e.RTH) return 'RTH'
-  if (e.THW && e.Pol) return 'Gemischt'
-  if (e.THW) return 'THW'
-  if (e.Pol && !e.nPol) return 'Polizei'
-  if (e.nPol && !e.Pol) return 'Nicht-Polizei'
-  if (e.Pol && e.nPol) return 'Gemischt'
-  if (e.OA) return 'Öffentliche Ordnung'
-  return 'Allgemein'
-}
-
-function deriveScope(e) {
-  if (e.Bundesweit) return 'Bundesweit'
-  if (e.Landesweit) return 'Landesweit'
-  if (e.Kreisweit) return 'Kreisweit'
-  return null
-}
-
-function deriveFlags(e) {
-  return [
-    e.RTH && 'RTH',
-    e.THW && 'THW',
-    e.Pol && 'Pol',
-    e.nPol && 'nPol',
-    e.OA && 'ÖA',
-  ].filter(Boolean)
-}
 
 const response = await fetch(SOURCE_URL)
 if (!response.ok) throw new Error(`HTTP ${response.status}`)
@@ -56,26 +28,12 @@ for (let i = 0; i < arrayText.length; i++) {
   if (arrayText[i] === '[') depth++
   else if (arrayText[i] === ']') { if (--depth === 0) { end = i + 1; break } }
 }
+
+/** @type {import('../src/types').Gruppe[]} */
 const gruppen = JSON.parse(arrayText.slice(0, end))
 
-const contacts = gruppen.map((e, i) => {
-  const entry = {
-    id: i + 1,
-    name: e.label,
-    value: e.value,
-    valueStr: String(e.value),
-    category: deriveCategory(e),
-    flags: deriveFlags(e),
-  }
-  const scope = deriveScope(e)
-  if (scope) entry.scope = scope
-  if (e.PolKW) entry.polKW = e.PolKW
-  if (e.Zusatztext) entry.zusatztext = e.Zusatztext
-  return entry
-})
-
-writeFileSync(OUT, JSON.stringify(contacts))
-console.log(`Wrote ${contacts.length} Funkgruppen to ${OUT}`)
+writeFileSync(OUT, JSON.stringify(gruppen))
+console.log(`Wrote ${gruppen.length} Funkgruppen to ${OUT}`)
 
 // Sync dataVersion in version.json from gruppen_version in the source file
 const versionMatch = text.match(/const gruppen_version\s*=\s*"([^"]+)"/)
