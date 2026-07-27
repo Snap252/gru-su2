@@ -232,15 +232,20 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
     </div>
 
     <!-- Detail-Ansicht -->
-    <main class="flex-1 px-4 py-6">
+    <main
+      id="detail-view"
+      class="flex-1 px-4 py-6"
+    >
       <div
         v-if="loading"
+        id="loading-state"
         class="text-center text-gray-400 mt-12"
       >
         Laden…
       </div>
       <div
         v-else-if="error"
+        id="error-state"
         class="text-center text-red-500 mt-12"
       >
         {{ error }}
@@ -248,6 +253,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
 
       <div
         v-else-if="selectedContact"
+        id="contact-card"
         class="bg-white rounded-2xl shadow-sm p-6 max-w-sm mx-auto"
       >
         <!-- Header row -->
@@ -256,6 +262,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
             📻
           </div>
           <button
+            id="contact-close-button"
             class="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
             @click="clearSelection"
           >
@@ -264,10 +271,16 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         </div>
 
         <!-- Name & scopes -->
-        <h2 class="text-xl font-semibold text-gray-900 leading-tight">
+        <h2
+          id="contact-label"
+          class="text-xl font-semibold text-gray-900 leading-tight"
+        >
           {{ selectedContact.label }}
         </h2>
-        <div class="flex flex-wrap items-center gap-2 mt-1.5 mb-4">
+        <div
+          id="contact-scopes"
+          class="flex flex-wrap items-center gap-2 mt-1.5 mb-4"
+        >
           <span
             v-for="scope in activeScopes(selectedContact)"
             :key="scope"
@@ -278,6 +291,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
 
         <!-- Group value (copyable) -->
         <button
+          id="contact-group-value"
           class="w-full flex items-center justify-between bg-blue-700 hover:bg-blue-800 active:bg-blue-900 text-white rounded-xl px-5 py-3 transition-colors mb-3 cursor-pointer"
           @click="copyValue(selectedContact.value)"
         >
@@ -289,6 +303,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         <!-- PolKW -->
         <div
           v-if="selectedContact.PolKW"
+          id="contact-polkw"
           class="flex items-center justify-between bg-gray-50 rounded-xl px-5 py-3 mb-3 text-sm"
         >
           <span class="text-gray-500">Pol-Kurzwahl</span>
@@ -298,6 +313,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         <!-- Flags -->
         <div
           v-if="activeFlags(selectedContact).length > 0"
+          id="contact-flags"
           class="flex flex-wrap gap-1.5 mb-4"
         >
           <span
@@ -313,6 +329,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         <!-- Zusatztext -->
         <p
           v-if="selectedContact.Zusatztext"
+          id="contact-zusatztext"
           class="text-xs text-gray-500 italic mb-4"
         >
           ℹ️ {{ selectedContact.Zusatztext }}
@@ -322,6 +339,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         <div class="flex gap-2">
           <button
             v-if="canShare"
+            id="contact-share-button"
             class="flex-1 flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
             @click="shareContact(selectedContact)"
           >
@@ -349,6 +367,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
           </button>
 
           <a
+            id="contact-whatsapp-link"
             :href="whatsappUrl(selectedContact)"
             target="_blank"
             rel="noopener noreferrer"
@@ -371,6 +390,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
 
       <div
         v-else
+        id="empty-state"
         class="text-center text-gray-300 mt-16 text-sm"
       >
         Gruppenname eingeben und auswählen
