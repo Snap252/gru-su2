@@ -1,11 +1,11 @@
 {
   "name": "auskunftssystem",
   "private": true,
-  "version": "1.1.37",
+  "version": "1.1.38",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vue-tsc --noEmit && vite build --base=$npm_config_base",
     "typecheck": "vue-tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
