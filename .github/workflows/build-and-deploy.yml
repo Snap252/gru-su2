@@ -36,7 +36,7 @@ jobs:
       - name: Build project
         run: |
           cd auskunftssystem
-          npm run build
+          npm run build --base=/gru-su2/
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
