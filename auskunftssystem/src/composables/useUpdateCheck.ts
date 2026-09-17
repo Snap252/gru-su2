@@ -33,7 +33,7 @@ function setDataVersion(v: string): void {
 
 async function fetchVersionJson(): Promise<VersionJson | null> {
   try {
-    const res = await fetch('/version.json', { cache: 'no-store' })
+    const res = await fetch(`${import.meta.env.BASE_URL}version.json`, { cache: 'no-store' })
     if (!res.ok) return null
     return await res.json() as VersionJson
   } catch {

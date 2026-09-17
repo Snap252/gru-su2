@@ -17,7 +17,7 @@ export function useContacts() {
     loading.value = true
     error.value = null
     try {
-      const res = await fetch('/data/contacts.json')
+      const res = await fetch(`${import.meta.env.BASE_URL}data/contacts.json`)
       const ct = res.headers.get('content-type') ?? ''
       // Auth redirects (SSO/VPN) yield a 200 HTML page — not JSON
       if (res.redirected || !ct.includes('json')) throw new Error('auth-redirect')
