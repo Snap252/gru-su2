@@ -23,7 +23,7 @@ export default defineConfig({
         start_url: './index.html',
         scope: './index.html',
         categories: ['productivity', 'utilities'],
-        display_override: ['window-controls-overlay', 'standalone', 'minimal-ui', 'fullscreen'],
+        // display_override: ['window-controls-overlay', 'standalone', 'minimal-ui', 'fullscreen'],
         icons: [
           { src: 'icons/android/android-launchericon-48-48.png',   sizes: '48x48',   type: 'image/png' },
           { src: 'icons/android/android-launchericon-72-72.png',   sizes: '72x72',   type: 'image/png' },

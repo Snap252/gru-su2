@@ -128,32 +128,78 @@ async function copyValue(val: number): Promise<void> {
 
 const canShare = computed<boolean>(() => 'share' in navigator)
 
-async function shareContact(contact: Gruppe): Promise<void> {
+// Sharing text options
+const sharingOption = ref<'Motorola' | 'Sepura'>('Motorola')
+
+function getSharingText(contact: Gruppe, format: 'Motorola' | 'Sepura' = 'Motorola'): string {
   const flags = activeFlags(contact)
   const scopes = activeScopes(contact)
-  const lines = [`${contact.label} (Gruppe ${contact.value})`]
-  if (scopes.length) lines.push(scopes.join(', '))
-  if (flags.length) lines.push(flags.join(' · '))
-  if (contact.PolKW) lines.push(`Pol-KW: ${contact.PolKW}`)
-  const hinweis = hinweisText(contact) ?? contact.Zusatztext
-  if (hinweis) lines.push(`Hinweis: ${hinweis}`)
+
+  if (format === 'Motorola') {
+    const lines = [`${contact.label} (Gruppe ${contact.value})`]
+    if (scopes.length) lines.push(scopes.join(', '))
+    if (flags.length) lines.push(flags.join(' · '))
+    if (contact.PolKW) lines.push(`Pol-KW: ${contact.PolKW}`)
+    const hinweis = hinweisText(contact) ?? contact.Zusatztext
+    if (hinweis) lines.push(`Hinweis: ${hinweis}`)
+    return lines.join('\n')
+  } else {
+    // Detailed format - more comprehensive information
+    const lines = [`Kontaktinformation für ${contact.label}`]
+    lines.push(`========================`)
+    lines.push(`Gruppe: ${contact.value}`)
+    if (scopes.length) lines.push(`Geltungsbereich: ${scopes.join(', ')}`)
+    if (flags.length) lines.push(`Organisationen: ${flags.join(', ')}`)
+    if (contact.PolKW) lines.push(`Polizei-Kurzwahl: ${contact.PolKW}`)
+    const hinweis = hinweisText(contact) ?? contact.Zusatztext
+    if (hinweis) lines.push(`Zusätzliche Information: ${hinweis}`)
+    lines.push(`========================`)
+    lines.push(`Gesendet über BOS-Kurzwahlen App`)
+    return lines.join('\n')
+  }
+}
+
+async function shareContact(contact: Gruppe): Promise<void> {
   try {
-    await navigator.share({ title: contact.label, text: lines.join('\n') })
+    await navigator.share({
+      title: contact.label,
+      text: getSharingText(contact, sharingOption.value)
+    })
   } catch { /* share cancelled or not available */ }
 }
 
 function whatsappUrl(contact: Gruppe): string {
   const flags = activeFlags(contact)
   const scopes = activeScopes(contact)
-  const lines = [
-    `*${contact.label}*`,
-    `_Gruppe ${contact.value}_`,
-  ]
-  if (scopes.length) lines.push(scopes.join(', '))
-  if (flags.length) lines.push(flags.join(' · '))
-  if (contact.PolKW) lines.push(`Pol-KW: ${contact.PolKW}`)
-  const hinweis = hinweisText(contact) ?? contact.Zusatztext
-  if (hinweis) lines.push(`ℹ️ ${hinweis}`)
+
+  // Apply the same sharing option to WhatsApp
+  let lines: string[] = []
+  if (sharingOption.value === 'Motorola') {
+    lines = [
+      `*${contact.label}*`,
+      `_Gruppe ${contact.value}_`,
+    ]
+    if (scopes.length) lines.push(scopes.join(', '))
+    if (flags.length) lines.push(flags.join(' · '))
+    if (contact.PolKW) lines.push(`Pol-KW: ${contact.PolKW}`)
+    const hinweis = hinweisText(contact) ?? contact.Zusatztext
+    if (hinweis) lines.push(`ℹ️ ${hinweis}`)
+  } else {
+    // Detailed format for WhatsApp
+    lines = [
+      `_*Kontaktinformation*_`,
+      `*${contact.label}*`,
+      ``,
+      `● Gruppe: _${contact.value}_`,
+    ]
+    if (scopes.length) lines.push(`● Geltungsbereich: ${scopes.join(', ')}`)
+    if (flags.length) lines.push(`● Organisationen: ${flags.join(', ')}`)
+    if (contact.PolKW) lines.push(`● Polizei-Kurzwahl: ${contact.PolKW}`)
+    const hinweis = hinweisText(contact) ?? contact.Zusatztext
+    if (hinweis) lines.push(`ℹ️ ${hinweis}`)
+    lines.push(``, `_Gesendet über BOS-Kurzwahlen App_`)
+  }
+
   return `https://wa.me/?text=${encodeURIComponent(lines.join('\n'))}`
 }
 
@@ -364,6 +410,31 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
         >
           ℹ️ {{ selectedContact.Zusatztext }}
         </p>
+
+        <!-- Sharing Options -->
+        <div class="mb-4">
+          <p class="text-sm font-medium text-gray-700 mb-2">Teilen als:</p>
+          <div class="flex gap-4 mb-3">
+            <label class="flex items-center flex-1/2">
+              <input
+                v-model="sharingOption"
+                type="radio"
+                value="Motorola"
+                class="h-4 w-4 text-blue-600 focus:ring-blue-500"
+              >
+              <span class="ml-2 text-sm text-gray-700">Motorola</span>
+            </label>
+            <label class="flex items-center flex-1/2">
+              <input
+                v-model="sharingOption"
+                type="radio"
+                value="Sepura"
+                class="h-4 w-4 text-blue-600 focus:ring-blue-500"
+              >
+              <span class="ml-2 text-sm text-gray-700">Sepura</span>
+            </label>
+          </div>
+        </div>
 
         <!-- Share buttons -->
         <div class="flex gap-2">
