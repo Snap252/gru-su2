@@ -20,8 +20,8 @@ export default defineConfig({
         background_color: '#50e3c2',
         display: 'standalone',
         orientation: 'portrait-primary',
-        start_url: '/',
-        scope: '/',
+        start_url: `${import.meta.env.BASE_URL}`,
+        scope: `${import.meta.env.BASE_URL}`,
         categories: ['productivity', 'utilities'],
         icons: [
           { src: 'icons/android/android-launchericon-48-48.png',   sizes: '48x48',   type: 'image/png' },
